@@ -1,0 +1,42 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Photo from '../components/Photo.astro';
+import shop from '../data/shop.json';
+import { tone } from '../lib/site';
+const slides = shop.slides.length ? shop.slides : [{ image: '', category: 'Gallery shop', maker: '' }];
+---
+<Layout title="Gallery Shop" description="Handmade art, craft and gifts by local Riverland makers, in the Rain Moth Gallery shop, Waikerie.">
+  <section class="page-intro page-intro--center"><h1>Gallery Shop</h1></section>
+
+  <section class="shop">
+    <div class="slides" aria-roledescription="carousel" aria-label="Shop highlights">
+      {slides.map((s, i) => (
+        <figure class={`slides__item ${i === 0 ? 'is-active' : ''}`} style="margin:0" aria-roledescription="slide" aria-label={`${i + 1} of ${slides.length}`}>
+          <Photo src={s.image} alt={[s.category, s.maker].filter(Boolean).join(' by ')} label="Product photo" colour={tone(i + 2)} eager={i === 0} />
+          <figcaption class="slides__caption">{[s.category.toUpperCase(), s.maker].filter(Boolean).join(' | ')}</figcaption>
+        </figure>
+      ))}
+      {slides.length > 1 && (
+        <>
+          <button class="feature__nav feature__nav--prev" type="button" aria-label="Previous photo" style="background: rgba(255,255,255,0.35)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button>
+          <button class="feature__nav feature__nav--next" type="button" aria-label="Next photo" style="background: rgba(255,255,255,0.35)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+        </>
+      )}
+    </div>
+    <div class="shop__text">
+      <h2 style="font-size: 22px">{shop.heading}</h2>
+      {shop.paragraphs.split(/\n\s*\n/).map((p) => <p style="font-size: 15px; line-height: 1.75">{p}</p>)}
+    </div>
+  </section>
+</Layout>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.slides').forEach((root) => {
+    const items = [...root.querySelectorAll<HTMLElement>('.slides__item')];
+    if (items.length < 2) return;
+    let i = 0;
+    const show = (n: number) => { items[i].classList.remove('is-active'); i = (n + items.length) % items.length; items[i].classList.add('is-active'); };
+    root.querySelector('.feature__nav--prev')?.addEventListener('click', () => show(i - 1));
+    root.querySelector('.feature__nav--next')?.addEventListener('click', () => show(i + 1));
+  });
+</script>

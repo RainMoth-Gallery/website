@@ -1,0 +1,48 @@
+---
+import { getEntry, render } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import Photo from '../components/Photo.astro';
+import { settings, tone } from '../lib/site';
+const about = await getEntry('pages', 'about');
+const history = await getEntry('pages', 'history');
+const { Content: AboutContent } = await render(about!);
+const { Content: HistoryContent } = await render(history!);
+---
+<Layout title="About" description="Rain Moth Gallery: a volunteer-run community art gallery in Waikerie, South Australia, since 1992.">
+  <section class="page-intro split split--even" style="align-items:center">
+    <div>
+      <h1>{about!.data.title}</h1>
+      <p class="lead" style="font-size: 18px">{about!.data.intro}</p>
+    </div>
+    <div style="height: 360px; border-radius: var(--radius); overflow: hidden">
+      <Photo src={about!.data.image} alt="Rain Moth Gallery building" label="Photo of the gallery" colour={tone(1)} eager />
+    </div>
+  </section>
+
+  <section class="section" style="border-top: 1px solid var(--line)">
+    <div class="split">
+      <h2>Who we are</h2>
+      <div class="prose"><AboutContent /></div>
+    </div>
+  </section>
+
+  <section class="section" id="history">
+    <div class="split">
+      <div>
+        <h2>{history!.data.title}</h2>
+        {history!.data.intro && <p class="muted" style="margin-top: 10px">{history!.data.intro}</p>}
+      </div>
+      <div class="prose"><HistoryContent /></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="panel panel--cream">
+      <div style="flex: 1 1 420px">
+        <h2 style="font-size: 22px; font-weight: 600; margin-bottom: 6px">Volunteer with us</h2>
+        <p>{settings.siteName} is run entirely by volunteers. If you'd like to help in the gallery or join {settings.organisation}, we'd love to hear from you.</p>
+      </div>
+      <a class="btn btn--solid" href="/contact-visit/#enquire">Get in touch</a>
+    </div>
+  </section>
+</Layout>

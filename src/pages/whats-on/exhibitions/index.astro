@@ -1,0 +1,67 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import Photo from '../../../components/Photo.astro';
+import { exhibitionsByStatus, dateRange, monthYear, tone } from '../../../lib/site';
+const { current, upcoming, past } = await exhibitionsByStatus();
+---
+<Layout title="Exhibitions" description="Current, upcoming and past exhibitions at Rain Moth Gallery, Waikerie. A new show roughly every eight weeks.">
+  <section class="page-intro">
+    <p class="eyebrow">What's On</p>
+    <h1>Exhibitions</h1>
+    <p class="lead">Our two exhibition rooms host a new show roughly every eight weeks, featuring local and regional artists. Entry is free.</p>
+  </section>
+
+  <section class="section" style="border-top: 1px solid var(--line)" aria-labelledby="now">
+    <p class="eyebrow" id="now">Now showing</p>
+    {current.length === 0 && <p class="empty">Our next exhibition is being installed. Check back soon, or follow us on Facebook for news.</p>}
+    {current.map((e, i) => (
+      <div class="exhibit" style={i > 0 ? 'margin-top: 56px' : undefined}>
+        <figure class="exhibit__media">
+          <div class="frame"><Photo src={e.data.image} alt={e.data.title} label="Exhibition image" colour={tone(i + 1)} /></div>
+          {e.data.imageCredit && <figcaption>{e.data.imageCredit}</figcaption>}
+        </figure>
+        <div class="exhibit__body">
+          <h2 style="font-size: 34px; font-weight: 600">{e.data.title}</h2>
+          {e.data.artists && <p style="font-weight: 500">{e.data.artists}</p>}
+          <p style="letter-spacing: 0.08em">{dateRange(e.data.start, e.data.end)}</p>
+          {e.data.summary && <p>{e.data.summary}</p>}
+          <div class="btn-row">
+            <a class="btn btn--solid" href={`/whats-on/exhibitions/${e.id}/`}>Read more</a>
+            <a class="btn" href="/contact-visit/#enquire">Enquire about a work</a>
+          </div>
+        </div>
+      </div>
+    ))}
+  </section>
+
+  {upcoming.length > 0 && (
+    <section class="section" aria-labelledby="upcoming">
+      <h2 id="upcoming" style="margin-bottom: 28px">Coming up</h2>
+      <div class="grid">
+        {upcoming.map((e, i) => (
+          <a class="card" href={`/whats-on/exhibitions/${e.id}/`}>
+            <div class="card__media"><Photo src={e.data.image} alt="" colour={tone(i + 2)} label="Image" /></div>
+            <p class="card__meta">{dateRange(e.data.start, e.data.end)}</p>
+            <p class="card__title">{e.data.title}</p>
+            {e.data.artists && <p class="card__sub">{e.data.artists}</p>}
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+
+  {past.length > 0 && (
+    <section class="section" aria-labelledby="past">
+      <h2 id="past" style="margin-bottom: 28px">Past exhibitions</h2>
+      <div class="grid grid--small">
+        {past.map((e, i) => (
+          <a class="card" href={`/whats-on/exhibitions/${e.id}/`}>
+            <div class="card__media"><Photo src={e.data.image} alt="" colour={tone(i + 4)} /></div>
+            <p class="card__title" style="font-size: 16px; font-weight: 500">{e.data.title}</p>
+            <p class="muted" style="font-size: 13px">{[e.data.artists, monthYear(e.data.start)].filter(Boolean).join(' · ')}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+</Layout>

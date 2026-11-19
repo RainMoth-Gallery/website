@@ -1,0 +1,16 @@
+---
+import { settings, time12 } from '../lib/site';
+const hours = settings.hours as Array<{ day: string; closed: boolean; open: string; close: string }>;
+---
+<table class="hours">
+  <caption class="visually-hidden">Opening hours</caption>
+  <tbody>
+    {hours.map((h) => (
+      <tr>
+        <th scope="row">{h.day}</th>
+        <td>{h.closed || !h.open ? 'Closed' : `${time12(h.open)} – ${time12(h.close)}`}</td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+{settings.hoursNote && <p class="hours-note">{settings.hoursNote}</p>}

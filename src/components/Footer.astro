@@ -1,0 +1,13 @@
+---
+import SocialIcons from './SocialIcons.astro';
+import { settings, addressLine } from '../lib/site';
+const year = new Date().getFullYear();
+---
+<footer class="site-footer wrap">
+  <div class="site-footer__inner">
+  <SocialIcons />
+  <img src="/images/logo.jpg" alt="" width="56" height="65" class="site-footer__logo" />
+  <p class="site-footer__address">{settings.siteName} · {addressLine()}</p>
+  <p class="site-footer__small">Run by volunteers of {settings.organisation} · © {year}</p>
+  </div>
+</footer>

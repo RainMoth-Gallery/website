@@ -1,0 +1,44 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import Photo from '../components/Photo.astro';
+import { visible, tone } from '../lib/site';
+const works = (await getCollection('publicArt')).filter(visible).sort((a, b) => a.data.order - b.data.order);
+const rendered = await Promise.all(works.map(async (w) => ({ w, Content: (await render(w)).Content })));
+---
+<Layout title="Public Art" description="Public art at Rain Moth Gallery and along the Waikerie art trail: fountains, mosaics, metal sculpture and more.">
+  <section class="page-intro split" style="align-items:flex-end">
+    <div>
+      <h1>Public Art</h1>
+      <p class="lead">The gallery building and garden are artworks in their own right, made by local artists, students and community groups. The gallery is also the perfect place to start a walk along the old irrigation channel to the lookout tower, the clifftop walk and the silo art.</p>
+    </div>
+    <div style="display:flex; justify-content:flex-end; align-items:flex-end"><a class="btn btn--solid" href="#trail">The Waikerie art trail</a></div>
+  </section>
+
+  <section class="section" style="border-top: 1px solid var(--line)" aria-label="Public artworks">
+    <div class="grid">
+      {rendered.map(({ w, Content }, i) => (
+        <figure class="card" style="margin:0">
+          <div class="card__media"><Photo src={w.data.image} alt={w.data.title} label="Photo of artwork" colour={tone(i)} /></div>
+          <figcaption style="display:flex; flex-direction:column; gap: 4px; margin-top: 6px">
+            <span class="card__title" style="font-size: 18px">{w.data.title}</span>
+            <span style="font-size: 14px">{[w.data.artist, w.data.year].filter(Boolean).join(', ')}</span>
+            {w.data.location && <span class="muted" style="font-size: 13px">{w.data.location}</span>}
+            <div class="muted" style="font-size: 14px; margin-top: 4px"><Content /></div>
+          </figcaption>
+        </figure>
+      ))}
+    </div>
+  </section>
+
+  <section class="section" id="trail" aria-labelledby="trail-h">
+    <div class="split">
+      <h2 id="trail-h">The Waikerie art trail</h2>
+      <div class="prose">
+        <p>From the gallery, follow the old irrigation channel to the lookout tower, then continue along the clifftop walk for the full view of the river and the sculpture leading to the silo art. It's a short, easy walk that visitors love.</p>
+        <p>For a guided version, download the <strong style="font-weight:500">Storytowns</strong> app for a podcast covering eight sights on the Waikerie art trail.</p>
+        <p>Pop into the gallery for directions and local tourist information.</p>
+      </div>
+    </div>
+  </section>
+</Layout>

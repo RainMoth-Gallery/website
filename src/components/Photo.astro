@@ -1,0 +1,21 @@
+---
+// Shows an uploaded photo, or a coloured placeholder until one is added.
+interface Props {
+  src?: string;
+  alt: string;
+  label?: string;
+  colour?: string;
+  class?: string;
+  ratio?: string;
+  eager?: boolean;
+}
+const { src, alt, label = '', colour = '#4f5b32', class: cls = '', ratio, eager = false } = Astro.props;
+const style = ratio ? `aspect-ratio: ${ratio}` : undefined;
+---
+{src ? (
+  <img src={src} alt={alt} class={`photo ${cls}`} style={style} loading={eager ? 'eager' : 'lazy'} decoding="async" />
+) : (
+  <div class={`photo photo--empty ${cls}`} style={`${style ? style + ';' : ''}background:${colour}`} role="img" aria-label={alt}>
+    {label && <span>{label}</span>}
+  </div>
+)}

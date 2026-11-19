@@ -1,0 +1,51 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import SocialIcons from '../../components/SocialIcons.astro';
+import { datedByStatus, dayNum, monthShort, longDate, timeRange, tone } from '../../lib/site';
+const { upcoming, past } = await datedByStatus('events');
+---
+<Layout title="Events" description="Exhibition openings, artist talks and special events at Rain Moth Gallery, Waikerie.">
+  <section class="page-intro">
+    <p class="eyebrow">What's On</p>
+    <h1>Events</h1>
+    <p class="lead">Exhibition openings, artist talks and demonstrations at the gallery. Everyone is welcome.</p>
+  </section>
+
+  <section class="section" style="border-top: 1px solid var(--line)" aria-labelledby="up">
+    <h2 id="up" style="margin-bottom: 12px">Upcoming</h2>
+    {upcoming.length === 0 && <p class="empty" style="margin-top: 16px">No events are scheduled right now. Follow us on Facebook to hear about the next one.</p>}
+    {upcoming.map((e, i) => (
+      <article class="dated">
+        <div class="dated__date" style={`background:${tone(i)}`} aria-hidden="true">
+          <span class="dated__day">{dayNum(e.data.date)}</span><span class="dated__month">{monthShort(e.data.date)}</span>
+        </div>
+        <div class="dated__body">
+          {e.data.type && <p class="card__meta" style="margin:0">{e.data.type}</p>}
+          <h3 style="font-size: 22px">{e.data.title}</h3>
+          <p>{[longDate(e.data.date), timeRange(e.data.startTime, e.data.endTime), e.data.price].filter(Boolean).join(' · ')}</p>
+          {e.data.summary && <p class="muted">{e.data.summary}</p>}
+        </div>
+        <a class="btn" href={e.data.bookingLink || '/contact-visit/#enquire'}>{e.data.bookingLink ? 'Book' : 'RSVP'}</a>
+      </article>
+    ))}
+  </section>
+
+  <section class="section">
+    <div class="panel">
+      <div style="flex: 1 1 360px">
+        <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 6px">Never miss an opening</h2>
+        <p>Follow us for event invitations and news.</p>
+      </div>
+      <SocialIcons email={false} />
+    </div>
+  </section>
+
+  {past.length > 0 && (
+    <section class="section" aria-labelledby="past">
+      <h2 id="past" style="margin-bottom: 12px">Past events</h2>
+      <ul class="timeline">
+        {past.slice(0, 12).map((e) => <li><strong>{monthShort(e.data.date)} {e.data.date.getUTCFullYear()}</strong><span>{e.data.title}</span></li>)}
+      </ul>
+    </section>
+  )}
+</Layout>

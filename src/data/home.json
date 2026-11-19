@@ -1,0 +1,14 @@
+{
+  "welcomeTitle": "Rain Moth Gallery",
+  "welcomeText": "Rain Moth Gallery is a volunteer-run community art space in a stone villa on Peake Terrace, Waikerie, a short walk from the River Murray. Two intimate exhibition rooms host a changing program of local and regional art, alongside a gift shop of work by local makers.\n\nWe also run demonstrations and workshops for adults and children, and we're a tourist information outlet, so drop in to plan your walk along the Waikerie art trail.",
+  "tiles": [
+    { "label": "Exhibitions", "link": "/whats-on/exhibitions/", "image": "" },
+    { "label": "Events", "link": "/whats-on/events/", "image": "" },
+    { "label": "Workshops", "link": "/whats-on/workshops/", "image": "" },
+    { "label": "Artists", "link": "/artists/", "image": "" },
+    { "label": "Public Art", "link": "/public-art/", "image": "" },
+    { "label": "Gallery Shop", "link": "/gallery-shop/", "image": "" },
+    { "label": "About Us", "link": "/about/", "image": "" },
+    { "label": "Contact + Visit", "link": "/contact-visit/", "image": "" }
+  ]
+}

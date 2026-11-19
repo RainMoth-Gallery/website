@@ -1,0 +1,60 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Photo from '../../components/Photo.astro';
+import EnquiryForm from '../../components/EnquiryForm.astro';
+import { visible, tone } from '../../lib/site';
+
+export async function getStaticPaths() {
+  const all = (await getCollection('artists')).filter(visible);
+  return all.map((entry) => ({ params: { id: entry.id }, props: { entry } }));
+}
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const d = entry.data;
+---
+<Layout title={d.name} description={`${d.name}${d.medium ? `, ${d.medium.toLowerCase()}` : ''}${d.town ? ` from ${d.town}` : ''}. Work available at Rain Moth Gallery, Waikerie.`} image={d.portrait || undefined}>
+  <p style="padding-top: 16px"><a class="muted" href="/artists/" style="text-decoration:none">← All artists</a></p>
+  <section class="section split split--even" style="align-items:flex-start">
+    <div style="max-width: 460px; aspect-ratio: 4 / 5; border-radius: var(--radius); overflow: hidden">
+      <Photo src={d.portrait} alt={`Portrait of ${d.name}`} label="Artist portrait" colour={tone(2)} eager />
+    </div>
+    <div style="display:flex; flex-direction:column; gap: 16px">
+      <h1>{d.name}</h1>
+      {(d.medium || d.town) && <p class="muted">{[d.medium, d.town].filter(Boolean).join(' · ')}</p>}
+      <div class="prose"><Content /></div>
+      <div class="btn-row">
+        {d.works.length > 0 && <a class="btn btn--solid" href="#works">See works</a>}
+        <a class="btn" href="#enquire">Enquire about this artist</a>
+      </div>
+    </div>
+  </section>
+
+  {d.works.length > 0 && (
+    <section class="section" id="works" aria-labelledby="works-h">
+      <h2 id="works-h" style="margin-bottom: 28px">Works</h2>
+      <div class="grid">
+        {d.works.map((w, i) => (
+          <figure class="card" style="margin:0">
+            <div class="card__media card__media--square" style="border-radius: 0"><Photo src={w.image} alt={w.title} label="Artwork" colour={tone(i + 3)} /></div>
+            <figcaption style="display:flex; flex-direction:column; gap: 2px; margin-top: 6px">
+              <span style="font-weight: 500"><em>{w.title}</em>{w.year && `, ${w.year}`}</span>
+              <span class="muted" style="font-size: 13px">{[w.medium, w.size].filter(Boolean).join(' · ')}</span>
+              <span style="font-size: 14px; font-weight: 500; color: var(--red)">{w.status === 'Sold' ? 'Sold' : [w.status, w.price].filter(Boolean).join(' · ')}</span>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <section class="section" id="enquire" aria-labelledby="enq">
+    <div class="split">
+      <div>
+        <h2 id="enq">Enquire about a work</h2>
+        <p style="margin-top: 12px">Tell us which work you're interested in and we'll get back to you with details.</p>
+      </div>
+      <EnquiryForm topic="Artwork enquiry" item={`${d.name}: `} submitLabel="Send enquiry" />
+    </div>
+  </section>
+</Layout>

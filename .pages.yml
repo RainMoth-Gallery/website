@@ -1,0 +1,360 @@
+# Pages CMS configuration: this defines the admin page staff use at app.pagescms.org.
+# Each entry below is a section in the admin sidebar.
+
+media:
+  input: public/images/uploads
+  output: /images/uploads
+  categories: [image]
+
+content:
+  # ---------- What's On ----------
+  - name: exhibitions
+    label: Exhibitions
+    type: collection
+    path: src/content/exhibitions
+    format: yaml-frontmatter
+    filename: "{fields.start}-{primary}.md"
+    view:
+      fields: [title, start, end, draft]
+      primary: title
+      sort: [start, title]
+      default:
+        sort: start
+        order: desc
+    fields:
+      - { name: title, label: Exhibition title, type: string, required: true }
+      - { name: artists, label: Artist(s), type: string }
+      - name: start
+        label: Start date
+        type: date
+        required: true
+        options: { format: yyyy-MM-dd }
+      - name: end
+        label: End date
+        type: date
+        required: true
+        options: { format: yyyy-MM-dd }
+      - { name: image, label: Main image, type: image }
+      - name: imageCredit
+        label: Image caption
+        type: string
+        description: "e.g. Artist name, Artwork title, 2026, oil on canvas. Courtesy the artist."
+      - name: summary
+        label: Short summary
+        type: text
+        description: One or two sentences. Shown on the homepage slideshow and in Google results.
+      - { name: opening, label: Opening event, type: string, description: "e.g. Friday 6 March, 6pm. All welcome." }
+      - name: featureColour
+        label: Homepage panel colour
+        type: select
+        description: Colour of the panel beside the image on the homepage. Leave blank for mustard.
+        options:
+          values:
+            - { name: "", label: Mustard (default) }
+            - { name: "#e8a63c", label: Orange }
+            - { name: "#c9cf9a", label: Sage }
+            - { name: "#d9c3a0", label: Sand }
+            - { name: "#9fc0d6", label: River blue }
+      - { name: draft, label: Draft (hide from the live site), type: boolean, default: false }
+      - { name: body, label: About the exhibition, type: rich-text }
+
+  - name: events
+    label: Events
+    type: collection
+    path: src/content/events
+    format: yaml-frontmatter
+    filename: "{fields.date}-{primary}.md"
+    view:
+      fields: [title, date, type, draft]
+      primary: title
+      sort: [date, title]
+      default:
+        sort: date
+        order: desc
+    fields:
+      - { name: title, label: Event title, type: string, required: true }
+      - name: type
+        label: Type of event
+        type: select
+        options:
+          values: [Exhibition opening, Artist talk, Demonstration, Special event, Market, Other]
+      - name: date
+        label: Date
+        type: date
+        required: true
+        options: { format: yyyy-MM-dd }
+      - name: startTime
+        label: Start time
+        type: string
+        description: "24-hour time, e.g. 18:00"
+        pattern: { regex: "^([01]?[0-9]|2[0-3]):[0-5][0-9]$", message: "Use 24-hour time like 18:00" }
+      - name: endTime
+        label: End time
+        type: string
+        description: "24-hour time, e.g. 20:00"
+        pattern: { regex: "^(([01]?[0-9]|2[0-3]):[0-5][0-9])?$", message: "Use 24-hour time like 20:00" }
+      - { name: price, label: Price, type: string, description: "e.g. Free, Gold coin donation, $10" }
+      - { name: summary, label: Short description, type: text }
+      - { name: image, label: Image (optional), type: image }
+      - { name: bookingLink, label: Booking link (optional), type: string, description: "Full web address for a booking page, e.g. Humanitix. Leave blank to send people to the contact form." }
+      - { name: draft, label: Draft (hide from the live site), type: boolean, default: false }
+
+  - name: workshops
+    label: Workshops
+    type: collection
+    path: src/content/workshops
+    format: yaml-frontmatter
+    filename: "{fields.date}-{primary}.md"
+    view:
+      fields: [title, date, tutor, draft]
+      primary: title
+      sort: [date, title]
+      default:
+        sort: date
+        order: desc
+    fields:
+      - { name: title, label: Workshop title, type: string, required: true }
+      - { name: medium, label: Medium, type: string, description: "e.g. Ceramics, Watercolour" }
+      - name: audience
+        label: Who it's for
+        type: select
+        options:
+          values: [Adults, Children, All ages, Teens]
+      - { name: tutor, label: Tutor, type: string }
+      - name: date
+        label: Date
+        type: date
+        required: true
+        options: { format: yyyy-MM-dd }
+      - name: startTime
+        label: Start time
+        type: string
+        description: "24-hour time, e.g. 10:00"
+        pattern: { regex: "^(([01]?[0-9]|2[0-3]):[0-5][0-9])?$", message: "Use 24-hour time like 10:00" }
+      - name: endTime
+        label: End time
+        type: string
+        description: "24-hour time, e.g. 13:00"
+        pattern: { regex: "^(([01]?[0-9]|2[0-3]):[0-5][0-9])?$", message: "Use 24-hour time like 13:00" }
+      - { name: cost, label: Cost, type: string, description: "e.g. $45, materials included" }
+      - { name: places, label: Number of places, type: string }
+      - { name: summary, label: Description, type: text }
+      - { name: image, label: Photo, type: image }
+      - { name: draft, label: Draft (hide from the live site), type: boolean, default: false }
+
+  # ---------- Artists & art ----------
+  - name: artists
+    label: Artists
+    type: collection
+    path: src/content/artists
+    format: yaml-frontmatter
+    filename: "{primary}.md"
+    view:
+      fields: [name, medium, town, draft]
+      primary: name
+      sort: [name, order]
+      default:
+        sort: name
+        order: asc
+    fields:
+      - { name: name, label: Artist name, type: string, required: true }
+      - { name: medium, label: Medium, type: string, description: "e.g. Painting, Ceramics, Glass" }
+      - { name: town, label: Town, type: string }
+      - { name: portrait, label: Portrait or feature image, type: image }
+      - name: works
+        label: Works
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{title} ({status})"
+        fields:
+          - { name: title, label: Title, type: string, required: true }
+          - { name: year, label: Year, type: string }
+          - { name: medium, label: Medium, type: string }
+          - { name: size, label: Size, type: string, description: "e.g. 60 × 80 cm" }
+          - { name: price, label: Price (optional), type: string }
+          - { name: image, label: Photo, type: image }
+          - name: status
+            label: Status
+            type: select
+            default: Available
+            options:
+              values: [Available, Sold, Not for sale]
+      - { name: order, label: Sort order (lower shows first), type: number, default: 100 }
+      - { name: draft, label: Draft (hide from the live site), type: boolean, default: false }
+      - { name: body, label: Biography, type: rich-text }
+
+  - name: publicArt
+    label: Public Art
+    type: collection
+    path: src/content/public-art
+    format: yaml-frontmatter
+    filename: "{primary}.md"
+    view:
+      fields: [title, artist, order]
+      primary: title
+      sort: [order, title]
+      default:
+        sort: order
+        order: asc
+    fields:
+      - { name: title, label: Title, type: string, required: true }
+      - { name: artist, label: Artist(s), type: string }
+      - { name: year, label: Year, type: string }
+      - { name: location, label: Location, type: string }
+      - { name: image, label: Photo, type: image }
+      - { name: order, label: Sort order (lower shows first), type: number, default: 100 }
+      - { name: draft, label: Draft (hide from the live site), type: boolean, default: false }
+      - { name: body, label: Description, type: rich-text }
+
+  # ---------- Pages ----------
+  - name: home
+    label: Homepage
+    type: file
+    path: src/data/home.json
+    format: json
+    fields:
+      - { name: welcomeTitle, label: Welcome heading, type: string }
+      - { name: welcomeText, label: Welcome text, type: text, description: Leave a blank line between paragraphs. }
+      - name: tiles
+        label: Photo tiles
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{label}"
+        fields:
+          - { name: label, label: Label, type: string, required: true }
+          - { name: link, label: Link, type: string, description: "A page on this site, e.g. /whats-on/events/" }
+          - { name: image, label: Photo, type: image }
+
+  - name: shop
+    label: Gallery Shop page
+    type: file
+    path: src/data/shop.json
+    format: json
+    fields:
+      - { name: heading, label: Heading, type: string }
+      - { name: paragraphs, label: Text, type: text, description: Leave a blank line between paragraphs. }
+      - name: slides
+        label: Slideshow photos
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{category} | {maker}"
+        fields:
+          - { name: image, label: Photo, type: image }
+          - { name: category, label: Category, type: string, description: "e.g. Ceramics" }
+          - { name: maker, label: Maker, type: string }
+
+  - name: pages
+    label: About & History
+    type: collection
+    path: src/content/pages
+    format: yaml-frontmatter
+    view:
+      fields: [title]
+      primary: title
+    operations:
+      create: false
+      delete: false
+      rename: false
+    fields:
+      - { name: title, label: Heading, type: string, required: true }
+      - { name: intro, label: Introduction, type: text }
+      - { name: image, label: Photo, type: image }
+      - { name: body, label: Text, type: rich-text }
+
+  # ---------- Settings ----------
+  - name: settings
+    label: Site Settings (hours, contact, socials)
+    type: file
+    path: src/data/settings.json
+    format: json
+    fields:
+      - { name: siteName, label: Gallery name, type: string, required: true }
+      - name: siteUrl
+        label: Website address
+        type: string
+        required: true
+        description: "The live address, e.g. https://rainmoth.org. Only change this if the domain changes."
+      - { name: tagline, label: Tagline, type: text, description: Shown on the homepage and under the site in Google results. }
+      - { name: organisation, label: Organisation, type: string }
+      - name: address
+        label: Address
+        type: object
+        fields:
+          - { name: street, label: Street, type: string }
+          - { name: town, label: Town, type: string }
+          - { name: state, label: State, type: string }
+          - { name: postcode, label: Postcode, type: string }
+          - { name: directions, label: How to find us, type: string }
+      - { name: phone, label: Phone, type: string }
+      - { name: email, label: Email, type: string }
+      - name: hours
+        label: Opening hours
+        type: object
+        description: "Times are 24-hour, e.g. 14:30 for 2:30pm."
+        list:
+          min: 7
+          max: 7
+          collapsible:
+            collapsed: true
+            summary: "{day}"
+        fields:
+          - name: day
+            label: Day
+            type: select
+            options:
+              values: [Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday]
+          - { name: closed, label: Closed this day, type: boolean, default: false }
+          - name: open
+            label: Opens
+            type: string
+            pattern: { regex: "^(([01]?[0-9]|2[0-3]):[0-5][0-9])?$", message: "Use 24-hour time like 10:30" }
+          - name: close
+            label: Closes
+            type: string
+            pattern: { regex: "^(([01]?[0-9]|2[0-3]):[0-5][0-9])?$", message: "Use 24-hour time like 14:30" }
+      - { name: hoursNote, label: Note under the hours, type: text }
+      - name: closures
+        label: Temporary closures
+        type: object
+        description: Shows a banner across the top of every page between these dates, then disappears by itself.
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{from} to {to}"
+        fields:
+          - name: from
+            label: From
+            type: date
+            required: true
+            options: { format: yyyy-MM-dd }
+          - name: to
+            label: To
+            type: date
+            required: true
+            options: { format: yyyy-MM-dd }
+          - { name: message, label: Banner message, type: string, required: true, description: "e.g. The gallery is closed from 24 December to 2 January. Merry Christmas!" }
+      - name: socials
+        label: Social media links
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{platform}"
+        fields:
+          - name: platform
+            label: Platform
+            type: select
+            options:
+              values: [facebook, instagram, tiktok, youtube, x, linkedin, other]
+          - { name: url, label: Full web address, type: string, required: true }
+      - { name: accessibility, label: Access information, type: text }
+      - name: web3formsKey
+        label: Web3Forms access key
+        type: string
+        description: Connects the contact forms to the gallery's email. Set up once; don't change unless the email changes.

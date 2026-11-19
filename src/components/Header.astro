@@ -1,0 +1,58 @@
+---
+import SocialIcons from './SocialIcons.astro';
+import { settings } from '../lib/site';
+const path = Astro.url.pathname;
+const is = (p: string) => (p === '/' ? path === '/' : path.startsWith(p));
+const whatsOn = [
+  { label: 'Exhibitions', href: '/whats-on/exhibitions/' },
+  { label: 'Events', href: '/whats-on/events/' },
+  { label: 'Workshops', href: '/whats-on/workshops/' },
+];
+const links = [
+  { label: 'Artists', href: '/artists/' },
+  { label: 'Public Art', href: '/public-art/' },
+  { label: 'Gallery Shop', href: '/gallery-shop/' },
+  { label: 'About', href: '/about/' },
+  { label: 'Contact + Visit', href: '/contact-visit/' },
+];
+---
+<header class="site-header wrap">
+  <a href="/" class="site-header__logo" aria-label={`${settings.siteName} home`}>
+    <img src="/images/logo.jpg" alt={`${settings.siteName} logo`} width="64" height="74" />
+  </a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+    <span class="nav-toggle__bars" aria-hidden="true"></span><span class="nav-toggle__label">Menu</span>
+  </button>
+  <nav id="site-nav" class="site-nav" aria-label="Main">
+    <ul class="site-nav__list">
+      <li><a href="/" aria-current={is('/') ? 'page' : undefined}>Home</a></li>
+      <li class="has-sub">
+        <button type="button" class="sub-toggle" aria-expanded="false" aria-controls="sub-whatson" data-current={is('/whats-on/') ? 'true' : undefined}>
+          What's On <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <ul id="sub-whatson" class="sub-menu">
+          {whatsOn.map((l) => <li><a href={l.href} aria-current={is(l.href) ? 'page' : undefined}>{l.label}</a></li>)}
+        </ul>
+      </li>
+      {links.map((l) => <li><a href={l.href} aria-current={is(l.href) ? 'page' : undefined}>{l.label}</a></li>)}
+    </ul>
+    <SocialIcons class="site-nav__socials" />
+  </nav>
+</header>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('.nav-toggle');
+  const nav = document.getElementById('site-nav');
+  toggle?.addEventListener('click', () => {
+    const open = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', String(!open));
+    nav?.classList.toggle('is-open', !open);
+  });
+  document.querySelectorAll<HTMLButtonElement>('.sub-toggle').forEach((btn) => {
+    const item = btn.closest('.has-sub');
+    const set = (open: boolean) => { btn.setAttribute('aria-expanded', String(open)); item?.classList.toggle('is-open', open); };
+    btn.addEventListener('click', (e) => { e.stopPropagation(); set(btn.getAttribute('aria-expanded') !== 'true'); });
+    item?.addEventListener('keydown', (e) => { if ((e as KeyboardEvent).key === 'Escape') { set(false); btn.focus(); } });
+    document.addEventListener('click', (e) => { if (!item?.contains(e.target as Node)) set(false); });
+  });
+</script>

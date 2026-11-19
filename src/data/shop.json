@@ -1,0 +1,9 @@
+{
+  "heading": "Quality | Handmade | Local",
+  "paragraphs": "Our gift shop sells art and handcrafts made mostly by local artists and gallery members: something for every budget, and every piece made here in the Riverland.\n\nNew work arrives regularly, so there is always something new to discover. Visit us in the gallery during opening hours.",
+  "slides": [
+    { "image": "", "category": "Ceramics", "maker": "[Maker name]" },
+    { "image": "", "category": "Jewellery", "maker": "[Maker name]" },
+    { "image": "", "category": "Prints & cards", "maker": "[Maker name]" }
+  ]
+}

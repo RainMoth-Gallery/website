@@ -1,0 +1,39 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../../../layouts/Layout.astro';
+import Photo from '../../../components/Photo.astro';
+import { visible, dateRange, iso, todayISO } from '../../../lib/site';
+
+export async function getStaticPaths() {
+  const all = (await getCollection('exhibitions')).filter(visible);
+  return all.map((entry) => ({ params: { id: entry.id }, props: { entry } }));
+}
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const d = entry.data;
+const today = todayISO();
+const status = iso(d.end) < today ? 'Past exhibition' : iso(d.start) > today ? 'Coming soon' : 'Now showing';
+---
+<Layout title={d.title} description={d.summary || `${d.title} at Rain Moth Gallery, ${dateRange(d.start, d.end)}.`} image={d.image || undefined}>
+  <p style="padding-top: 16px"><a class="muted" href="/whats-on/exhibitions/" style="text-decoration:none">← All exhibitions</a></p>
+  <section class="section">
+    <div class="exhibit">
+      <figure class="exhibit__media">
+        <div class="frame"><Photo src={d.image} alt={d.title} label="Exhibition image" eager /></div>
+        {d.imageCredit && <figcaption>{d.imageCredit}</figcaption>}
+      </figure>
+      <div class="exhibit__body">
+        <p class="eyebrow">{status}</p>
+        <h1>{d.title}</h1>
+        {d.artists && <p style="font-size: 17px; font-weight: 500">{d.artists}</p>}
+        <p style="letter-spacing: 0.08em">{dateRange(d.start, d.end)}</p>
+        {d.opening && <p><strong style="font-weight:500">Opening:</strong> {d.opening}</p>}
+        <div class="prose"><Content /></div>
+        <div class="btn-row">
+          <a class="btn btn--solid" href="/contact-visit/#enquire">Enquire about a work</a>
+          <a class="btn" href="/contact-visit/">Plan your visit</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>

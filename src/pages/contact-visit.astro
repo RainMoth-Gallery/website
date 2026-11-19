@@ -1,0 +1,49 @@
+---
+import Layout from '../layouts/Layout.astro';
+import HoursTable from '../components/HoursTable.astro';
+import EnquiryForm from '../components/EnquiryForm.astro';
+import SocialIcons from '../components/SocialIcons.astro';
+import { settings, addressLine, mailto, telHref } from '../lib/site';
+const mapQuery = encodeURIComponent(`${settings.siteName}, ${addressLine()}`);
+---
+<Layout title="Contact + Visit" description={`Opening hours, address and contact details for ${settings.siteName}, ${addressLine()}. Entry is free.`}>
+  <section class="page-intro">
+    <h1>Contact + Visit</h1>
+    <p class="lead">Entry is free, and our volunteers will be glad to see you.</p>
+  </section>
+
+  <section class="section split split--even" style="border-top: 1px solid var(--line)">
+    <div style="display:flex; flex-direction:column; gap: 32px">
+      <div>
+        <h2 style="font-size: 20px; font-weight: 600; margin-bottom: 10px">Opening hours</h2>
+        <HoursTable />
+      </div>
+      <div>
+        <h2 style="font-size: 20px; font-weight: 600; margin-bottom: 10px">Address</h2>
+        <address style="font-style: normal">
+          {settings.siteName}<br />{settings.address.street}<br />{settings.address.town} {settings.address.state} {settings.address.postcode}
+        </address>
+        {settings.address.directions && <p class="muted" style="margin-top: 8px">{settings.address.directions}</p>}
+      </div>
+      <div>
+        <h2 style="font-size: 20px; font-weight: 600; margin-bottom: 10px">Contact</h2>
+        <p>Phone: <a href={telHref()}>{settings.phone}</a><br />Email: <a href={mailto()}>{settings.email}</a></p>
+        <SocialIcons email={false} class="contact-socials" />
+      </div>
+      <div>
+        <h2 style="font-size: 20px; font-weight: 600; margin-bottom: 10px">Access</h2>
+        <p>{settings.accessibility}</p>
+        <p style="margin-top: 8px">We're also a tourist information outlet. Ask our volunteers about the Waikerie art trail and things to do in the Riverland.</p>
+      </div>
+    </div>
+    <iframe class="map" style="min-height: 480px" title={`Map showing ${settings.siteName}`} loading="lazy" referrerpolicy="no-referrer-when-downgrade" src={`https://www.google.com/maps?q=${mapQuery}&output=embed`}></iframe>
+  </section>
+
+  <section class="section split" id="enquire">
+    <div>
+      <h2>Send us a message</h2>
+      <p style="margin-top: 12px">Questions about an artwork, the gallery shop, a workshop booking, or exhibiting your work? Send us a message and a volunteer will get back to you.</p>
+    </div>
+    <EnquiryForm />
+  </section>
+</Layout>

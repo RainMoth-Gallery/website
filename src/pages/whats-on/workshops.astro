@@ -1,0 +1,42 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Photo from '../../components/Photo.astro';
+import { datedByStatus, longDate, timeRange, tone } from '../../lib/site';
+const { upcoming } = await datedByStatus('workshops');
+---
+<Layout title="Workshops" description="Art workshops and demonstrations for adults and children at Rain Moth Gallery, Waikerie.">
+  <section class="page-intro">
+    <p class="eyebrow">What's On</p>
+    <h1>Workshops</h1>
+    <p class="lead">Hands-on workshops and demonstrations for adults and children, led by local artists.</p>
+  </section>
+
+  <section class="section" style="border-top: 1px solid var(--line)" aria-label="Upcoming workshops">
+    {upcoming.length === 0 && <p class="empty">New workshops are announced regularly. Follow us on Facebook, or get in touch to register your interest.</p>}
+    <div class="grid" style="grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 32px">
+      {upcoming.map((w, i) => (
+        <article class="workshop">
+          <div class="workshop__media"><Photo src={w.data.image} alt="" label="Workshop photo" colour={tone(i + 2)} /></div>
+          <div class="workshop__body">
+            {(w.data.medium || w.data.audience) && <p class="card__meta" style="margin:0">{[w.data.medium, w.data.audience].filter(Boolean).join(' · ')}</p>}
+            <h2 style="font-size: 22px; font-weight: 600">{w.data.title}</h2>
+            {w.data.summary && <p>{w.data.summary}</p>}
+            <dl class="facts">
+              {w.data.tutor && <div><dt>Tutor</dt><dd>{w.data.tutor}</dd></div>}
+              <div><dt>When</dt><dd>{longDate(w.data.date)}{w.data.startTime && <><br />{timeRange(w.data.startTime, w.data.endTime)}</>}</dd></div>
+              {w.data.cost && <div><dt>Cost</dt><dd>{w.data.cost}</dd></div>}
+              {w.data.places && <div><dt>Places</dt><dd>{w.data.places}</dd></div>}
+            </dl>
+            <div style="margin-top: auto; padding-top: 12px"><a class="btn btn--solid" href="/contact-visit/#enquire">Book a place</a></div>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="section" style="text-align:center">
+    <h2 style="font-size: 24px">Want to run a workshop?</h2>
+    <p class="lead" style="margin-inline:auto">We welcome artists who'd like to share their skills at the gallery.</p>
+    <p style="margin-top: 18px"><a class="btn" href="/contact-visit/#enquire">Get in touch</a></p>
+  </section>
+</Layout>

@@ -1,0 +1,32 @@
+{
+  "siteName": "Rain Moth Gallery",
+  "siteUrl": "https://rainmoth.org",
+  "tagline": "The Riverland's only exhibiting community art space. A place to experience, purchase, exhibit, and support local artisans in Waikerie.",
+  "organisation": "Waikerie Community Arts Centre Inc.",
+  "address": {
+    "street": "4 Peake Terrace",
+    "town": "Waikerie",
+    "state": "SA",
+    "postcode": "5330",
+    "directions": "A short walk from the River Murray frontage, next to Federation Park."
+  },
+  "phone": "0435 648 282",
+  "email": "rainmothgallery.waikerie@gmail.com",
+  "hours": [
+    { "day": "Monday", "closed": false, "open": "10:30", "close": "14:30" },
+    { "day": "Tuesday", "closed": false, "open": "10:30", "close": "14:30" },
+    { "day": "Wednesday", "closed": false, "open": "10:30", "close": "14:30" },
+    { "day": "Thursday", "closed": false, "open": "10:30", "close": "14:30" },
+    { "day": "Friday", "closed": false, "open": "10:30", "close": "14:30" },
+    { "day": "Saturday", "closed": false, "open": "10:00", "close": "13:00" },
+    { "day": "Sunday", "closed": true, "open": "", "close": "" }
+  ],
+  "hoursNote": "Entry is free. Please check our Facebook page for any changes to opening hours.",
+  "closures": [],
+  "socials": [
+    { "platform": "facebook", "url": "https://www.facebook.com/profile.php?id=100057308116285" },
+    { "platform": "instagram", "url": "https://www.instagram.com/rainmothgallery/" }
+  ],
+  "accessibility": "Wheelchair-accessible paved entrance.",
+  "web3formsKey": ""
+}

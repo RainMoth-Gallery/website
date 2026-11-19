@@ -1,0 +1,98 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Photo from '../components/Photo.astro';
+import HoursTable from '../components/HoursTable.astro';
+import SocialIcons from '../components/SocialIcons.astro';
+import home from '../data/home.json';
+import { settings, exhibitionsByStatus, dateRange, tone, addressLine } from '../lib/site';
+
+const { current, upcoming } = await exhibitionsByStatus();
+const slides = [
+  ...current.map((e) => ({ e, label: 'NOW SHOWING' })),
+  ...upcoming.slice(0, 2).map((e) => ({ e, label: 'COMING SOON' })),
+];
+const mapQuery = encodeURIComponent(`${settings.siteName}, ${addressLine()}`);
+---
+<Layout>
+  {slides.length > 0 ? (
+    <section class="feature" aria-roledescription="carousel" aria-label="Exhibitions">
+      {slides.map(({ e, label }, i) => (
+        <article class={`feature__slide ${i === 0 ? 'is-active' : ''}`} aria-roledescription="slide" aria-label={`${i + 1} of ${slides.length}`}>
+          <div class="feature__media">
+            <Photo src={e.data.image} alt={e.data.title} label="Exhibition image" colour={tone(i + 1)} eager={i === 0} />
+            {slides.length > 1 && (
+              <div class="feature__controls">
+                <button class="feature__nav feature__nav--prev" type="button" aria-label="Previous exhibition"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button>
+                <button class="feature__nav feature__nav--next" type="button" aria-label="Next exhibition"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+              </div>
+            )}
+          </div>
+          <div class="feature__panel" style={e.data.featureColour ? `background:${e.data.featureColour}` : undefined}>
+            <p class="feature__kicker">Exhibition <strong>{label === 'NOW SHOWING' ? 'now showing' : 'coming soon'}</strong></p>
+            <h1 class="feature__title">{e.data.title}</h1>
+            <p class="feature__dates">{dateRange(e.data.start, e.data.end)}</p>
+            {e.data.summary && <p class="feature__text">{e.data.summary}</p>}
+            <div><a class="btn" href={`/whats-on/exhibitions/${e.id}/`}>More about this exhibition</a></div>
+          </div>
+        </article>
+      ))}
+    </section>
+  ) : (
+    <section class="feature">
+      <div class="feature__slide is-active">
+        <div class="feature__media"><Photo src="" alt="Rain Moth Gallery" label="Gallery photo" colour={tone(1)} /></div>
+        <div class="feature__panel">
+          <p class="feature__kicker">Welcome to</p>
+          <h1 class="feature__title">{settings.siteName}</h1>
+          <p class="feature__text">{settings.tagline}</p>
+          <div><a class="btn" href="/whats-on/exhibitions/">See what's on</a></div>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <hr class="rule" style="margin-top: 80px" />
+  <section class="section" aria-label="Explore the gallery">
+    <div class="tiles">
+      {home.tiles.map((t, i) => (
+        <a class="tile" href={t.link}>
+          <Photo src={t.image} alt="" colour={tone(i)} />
+          <span>{t.label}</span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="section split">
+    <h2>{home.welcomeTitle}</h2>
+    <div class="prose">
+      {home.welcomeText.split(/\n\s*\n/).map((p) => <p>{p}</p>)}
+      <p style="margin-top: 22px"><a class="btn btn--accent" href="/about/">Learn more about our gallery</a></p>
+    </div>
+  </section>
+
+  <section class="section split split--even">
+    <div>
+      <h2 style="margin-bottom: 14px">Visit us</h2>
+      <p>{addressLine()}</p>
+      <p class="muted" style="margin-bottom: 18px">{settings.address.directions}</p>
+      <HoursTable />
+      <p style="margin-top: 18px"><a class="text-link" href="/contact-visit/">Directions, access and contact →</a></p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap: 16px">
+      <iframe class="map" title={`Map showing ${settings.siteName}`} loading="lazy" referrerpolicy="no-referrer-when-downgrade" src={`https://www.google.com/maps?q=${mapQuery}&output=embed`}></iframe>
+      <div style="display:flex; align-items:center; gap: 10px; flex-wrap: wrap"><span>Follow us</span><SocialIcons email={false} /></div>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.feature').forEach((root) => {
+    const slides = [...root.querySelectorAll<HTMLElement>('.feature__slide')];
+    if (slides.length < 2) return;
+    let i = 0;
+    const show = (n: number) => { slides[i].classList.remove('is-active'); i = (n + slides.length) % slides.length; slides[i].classList.add('is-active'); };
+    root.querySelectorAll('.feature__nav--prev').forEach((b) => b.addEventListener('click', () => show(i - 1)));
+    root.querySelectorAll('.feature__nav--next').forEach((b) => b.addEventListener('click', () => show(i + 1)));
+  });
+</script>

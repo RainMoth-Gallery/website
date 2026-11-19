@@ -1,0 +1,20 @@
+# Rebuilds the live site once a day so finished exhibitions and events
+# move to "Past", and closure banners appear and disappear on the right day.
+# Needs a repository secret called CLOUDFLARE_DEPLOY_HOOK (see README).
+name: Daily rebuild
+
+on:
+  schedule:
+    - cron: '0 15 * * *' # 15:00 UTC = 00:30–01:30 in Adelaide, depending on daylight saving
+  workflow_dispatch: {}
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Cloudflare Pages build
+        env:
+          HOOK: ${{ secrets.CLOUDFLARE_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$HOOK" ]; then echo "CLOUDFLARE_DEPLOY_HOOK secret is not set yet - skipping."; exit 0; fi
+          curl -fsS -X POST "$HOOK"

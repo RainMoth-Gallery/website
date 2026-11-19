@@ -1,0 +1,88 @@
+---
+import '@fontsource/poppins/300.css';
+import '@fontsource/poppins/400.css';
+import '@fontsource/poppins/500.css';
+import '@fontsource/poppins/600.css';
+import '@fontsource/poppins/700.css';
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { settings, activeClosures } from '../lib/site';
+
+interface Props { title?: string; description?: string; image?: string; noindex?: boolean }
+const { title, description = settings.tagline, image, noindex = false } = Astro.props;
+const fullTitle = title ? `${title} | ${settings.siteName}` : `${settings.siteName} | Waikerie, South Australia`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL(image || '/images/logo.jpg', Astro.site).href;
+const closures = activeClosures();
+
+// Structured data for Google: built from Site Settings, so it updates with the admin page.
+const dayMap: Record<string, string> = { Monday: 'Mo', Tuesday: 'Tu', Wednesday: 'We', Thursday: 'Th', Friday: 'Fr', Saturday: 'Sa', Sunday: 'Su' };
+const hours = (settings.hours as Array<{ day: string; closed: boolean; open: string; close: string }>).filter((h) => !h.closed && h.open && h.close);
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ArtGallery',
+  name: settings.siteName,
+  description: settings.tagline,
+  url: Astro.site?.href,
+  logo: new URL('/images/logo.jpg', Astro.site).href,
+  image: ogImage,
+  telephone: settings.phone,
+  email: settings.email,
+  isAccessibleForFree: true,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: settings.address.street,
+    addressLocality: settings.address.town,
+    addressRegion: settings.address.state,
+    postalCode: settings.address.postcode,
+    addressCountry: 'AU',
+  },
+  openingHoursSpecification: hours.map((h) => ({
+    '@type': 'OpeningHoursSpecification',
+    dayOfWeek: `https://schema.org/${h.day}`,
+    opens: h.open,
+    closes: h.close,
+  })),
+  openingHours: hours.map((h) => `${dayMap[h.day] ?? h.day} ${h.open}-${h.close}`),
+  sameAs: (settings.socials as Array<{ url: string }>).map((s) => s.url).filter(Boolean),
+  parentOrganization: { '@type': 'Organization', name: settings.organisation },
+};
+---
+<!doctype html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{fullTitle}</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={canonical} />
+  {noindex && <meta name="robots" content="noindex" />}
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="sitemap" href="/sitemap-index.xml" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content={settings.siteName} />
+  <meta property="og:title" content={fullTitle} />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:image" content={ogImage} />
+  <meta property="og:locale" content="en_AU" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="theme-color" content="#ffffff" />
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  {closures.length > 0 && (
+    <div class="closure-banner" role="status">
+      {closures.map((c) => <p>{c.message}</p>)}
+    </div>
+  )}
+  <Header />
+  <main id="main" class="wrap">
+    <slot />
+  </main>
+  <Footer />
+</body>
+</html>
