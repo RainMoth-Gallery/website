@@ -2,7 +2,7 @@
 
 The website for Rain Moth Gallery, Waikerie: [rainmoth.org](https://rainmoth.org).
 
-Built with [Astro](https://astro.build), hosted free on Cloudflare Pages, and edited through [Pages CMS](https://pagescms.org). All content lives as plain files in this repository, with no database.
+Built with [Astro](https://astro.build), hosted free on Cloudflare, and edited through [Pages CMS](https://pagescms.org). All content lives as plain files in this repository, with no database.
 
 ## Editing content (for gallery volunteers)
 
@@ -22,14 +22,15 @@ To give another volunteer editing access, add them as a collaborator in Pages CM
 
 ## One-time setup
 
-### 1. Cloudflare Pages (hosting)
-1. Cloudflare dashboard → **Workers & Pages** → **Create** → **Pages** → **Connect to Git** → choose `RainMoth-Gallery/website`.
-2. Build settings: Framework preset **Astro**, build command `npm run build`, output directory `dist`.
-3. Environment variable: `NODE_VERSION` = `22`.
-4. Deploy, then **Custom domains** → add `rainmoth.org` (and `www.rainmoth.org`, redirecting to `rainmoth.org`).
+### 1. Cloudflare (hosting)
+The site is hosted as a Cloudflare Worker serving static files (config in `wrangler.jsonc`).
+1. Cloudflare dashboard → **Workers & Pages** → **Create** → import `RainMoth-Gallery/website` from GitHub.
+2. Build command `npm run build`, deploy command `npx wrangler deploy`, path `/`.
+3. Build variable: `NODE_VERSION` = `22`.
+4. Deploy, then in the Worker: **Settings** → **Domains & Routes** → add custom domain `rainmoth.org` (and `www.rainmoth.org`).
 
 ### 2. Daily rebuild (keeps "What's On" current)
-1. In the Pages project: **Settings** → **Builds** → **Deploy hooks** → add a hook named `daily`, branch `main`. Copy the URL.
+1. In the Worker: **Settings** → **Builds** → **Deploy Hooks** → create a hook named `daily` for branch `main`. Copy the URL.
 2. In GitHub: repository **Settings** → **Secrets and variables** → **Actions** → **New repository secret**, named `CLOUDFLARE_DEPLOY_HOOK`, with the URL as the value.
 
 The workflow in `.github/workflows/daily-rebuild.yml` then rebuilds the site every night just after midnight Adelaide time.
