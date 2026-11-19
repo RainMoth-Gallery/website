@@ -4,7 +4,8 @@
   "tiles": [
     {
       "label": "Exhibitions",
-      "link": "/whats-on/exhibitions/"
+      "link": "/whats-on/exhibitions/",
+      "image": "/images/uploads/Exhibitions-1.png"
     },
     {
       "label": "Events",
