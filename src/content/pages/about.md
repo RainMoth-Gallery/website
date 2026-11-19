@@ -1,9 +1,9 @@
 ---
 title: About Rain Moth
-intro: "The Riverland's only exhibiting community art space: a place to experience, purchase, exhibit and support local artisans in Waikerie."
-image: ""
+intro: "The Riverland's only exhibiting community art space: a place to
+  experience, purchase, exhibit and support local artisans in Waikerie."
+image: /images/uploads/Street_View.png
 ---
-
 Rain Moth Gallery is a community art gallery in a stone villa at 4 Peake Terrace, Waikerie, a short walk from the River Murray frontage and right next to Federation Park. The gallery is run by Waikerie Community Arts Centre Inc. and staffed entirely by volunteers.
 
 ## Why "Rain Moth"?
@@ -17,3 +17,4 @@ Two intimate exhibition rooms host a changing program of exhibitions, with a new
 We run demonstrations and workshops for adults and children, and the gallery is also a tourist information outlet. Riverland visitors, riverboat cruises and bus groups all call in.
 
 > "The gallery is a great place to start your walk along the old irrigation channel to the lookout tower and continue on to the clifftop walk, where you can see the full view of the river and sculpture leading to the silo art." — Karen Richardson, former Chairperson
+
