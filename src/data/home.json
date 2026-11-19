@@ -22,7 +22,8 @@
     },
     {
       "label": "Public Art",
-      "link": "/public-art/"
+      "link": "/public-art/",
+      "image": "/images/uploads/Public_Art.png"
     },
     {
       "label": "Gallery Shop",
