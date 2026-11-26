@@ -11,5 +11,5 @@ summary: Join us on Saturday 5 December at 11am to open Enchanted Forests of
   folklore and fairytales through whimsical, narrative-driven work. All welcome,
   and light refreshments will be served. Rain Moth Gallery, 4 Peake Terrace,
   Waikerie.
-draft: true
+draft: false
 ---
