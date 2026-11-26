@@ -217,6 +217,26 @@ content:
     fields:
       - { name: welcomeTitle, label: Welcome heading, type: string }
       - { name: welcomeText, label: Welcome text, type: text, description: Leave a blank line between paragraphs. }
+      - name: changeover
+        label: Changeover slide
+        type: object
+        description: Shown on the homepage slideshow only on days when one exhibition has finished and the next has not started. It never appears in the exhibition lists.
+        fields:
+          - { name: enabled, label: Show this slide between exhibitions, type: boolean, default: true }
+          - { name: kicker, label: Small heading, type: string, description: "e.g. Between exhibitions" }
+          - { name: title, label: Heading, type: string }
+          - { name: text, label: Short message, type: text, description: The date the next exhibition opens is added automatically. }
+          - { name: image, label: Photo, type: image }
+          - name: featureColour
+            label: Panel colour
+            type: select
+            options:
+              values:
+                - { name: "", label: Mustard (default) }
+                - { name: "#e8a63c", label: Orange }
+                - { name: "#c9cf9a", label: Sage }
+                - { name: "#d9c3a0", label: Sand }
+                - { name: "#9fc0d6", label: River blue }
       - name: tiles
         label: Photo tiles
         type: object

@@ -4,38 +4,88 @@ import Photo from '../components/Photo.astro';
 import HoursTable from '../components/HoursTable.astro';
 import SocialIcons from '../components/SocialIcons.astro';
 import home from '../data/home.json';
-import { settings, exhibitionsByStatus, dateRange, tone, addressLine } from '../lib/site';
+import { settings, exhibitionsByStatus, dateRange, shortDate, tone, addressLine } from '../lib/site';
 
-const { current, upcoming } = await exhibitionsByStatus();
-const slides = [
-  ...current.map((e) => ({ e, label: 'NOW SHOWING' })),
-  ...upcoming.slice(0, 2).map((e) => ({ e, label: 'COMING SOON' })),
+const { current, upcoming, past } = await exhibitionsByStatus();
+
+// One shape for every slide, so exhibitions and the changeover slide share the same markup.
+interface Slide {
+  kicker: string;
+  kickerStrong?: string;
+  title: string;
+  dates?: string;
+  text?: string;
+  href: string;
+  button: string;
+  image?: string;
+  colour?: string;
+}
+const exhibitionSlide = (e: (typeof current)[number], strong: string): Slide => ({
+  kicker: 'Exhibition',
+  kickerStrong: strong,
+  title: e.data.title,
+  dates: dateRange(e.data.start, e.data.end),
+  text: e.data.summary,
+  href: `/whats-on/exhibitions/${e.id}/`,
+  button: 'More about this exhibition',
+  image: e.data.image,
+  colour: e.data.featureColour,
+});
+
+// A changeover day is a day with no exhibition on, after at least one has finished. The slide comes from
+// the Homepage settings, not from an exhibition entry, so it never shows up in the exhibition lists.
+const co = home.changeover;
+const isChangeover = co?.enabled !== false && current.length === 0 && past.length > 0;
+const changeoverSlide: Slide[] = isChangeover ? [{
+  kicker: co?.kicker || 'Between exhibitions',
+  title: co?.title || 'Changing over',
+  dates: upcoming[0] ? `Opens ${shortDate(upcoming[0].data.start)}` : undefined,
+  text: co?.text,
+  href: '/whats-on/exhibitions/',
+  button: "See what's on",
+  image: co?.image,
+  colour: co?.featureColour,
+}] : [];
+
+const slides: Slide[] = [
+  ...changeoverSlide,
+  ...current.map((e) => exhibitionSlide(e, 'now showing')),
+  ...upcoming.slice(0, 2).map((e) => exhibitionSlide(e, 'coming soon')),
 ];
 const mapQuery = encodeURIComponent(`${settings.siteName}, ${addressLine()}`);
 ---
 <Layout>
   {slides.length > 0 ? (
     <section class="feature" aria-roledescription="carousel" aria-label="Exhibitions">
-      {slides.map(({ e, label }, i) => (
-        <article class={`feature__slide ${i === 0 ? 'is-active' : ''}`} aria-roledescription="slide" aria-label={`${i + 1} of ${slides.length}`}>
-          <div class="feature__media">
-            <Photo src={e.data.image} alt={e.data.title} label="Exhibition image" colour={tone(i + 1)} eager={i === 0} />
-            {slides.length > 1 && (
-              <div class="feature__controls">
-                <button class="feature__nav feature__nav--prev" type="button" aria-label="Previous exhibition"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button>
-                <button class="feature__nav feature__nav--next" type="button" aria-label="Next exhibition"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
-              </div>
-            )}
-          </div>
-          <div class="feature__panel" style={e.data.featureColour ? `background:${e.data.featureColour}` : undefined}>
-            <p class="feature__kicker">Exhibition <strong>{label === 'NOW SHOWING' ? 'now showing' : 'coming soon'}</strong></p>
-            <h1 class="feature__title">{e.data.title}</h1>
-            <p class="feature__dates">{dateRange(e.data.start, e.data.end)}</p>
-            {e.data.summary && <p class="feature__text">{e.data.summary}</p>}
-            <div><a class="btn" href={`/whats-on/exhibitions/${e.id}/`}>More about this exhibition</a></div>
-          </div>
-        </article>
-      ))}
+      <div class="feature__stage">
+        {slides.map((slide, i) => (
+          <article class={`feature__slide ${i === 0 ? 'is-active' : ''}`} aria-roledescription="slide" aria-label={`${i + 1} of ${slides.length}`}>
+            <div class="feature__media">
+              <Photo src={slide.image} alt={slide.title} label="Exhibition image" colour={tone(i + 1)} eager={i === 0} />
+            </div>
+            <div class="feature__panel" style={slide.colour ? `background:${slide.colour}` : undefined}>
+              <p class="feature__kicker">{slide.kicker}{slide.kickerStrong && <> <strong>{slide.kickerStrong}</strong></>}</p>
+              <h1 class="feature__title">{slide.title}</h1>
+              {slide.dates && <p class="feature__dates">{slide.dates}</p>}
+              {slide.text && <p class="feature__text">{slide.text}</p>}
+              <div><a class="btn" href={slide.href}>{slide.button}</a></div>
+            </div>
+          </article>
+        ))}
+        {slides.length > 1 && (
+          <>
+            <button class="feature__nav feature__nav--prev" type="button" aria-label="Previous exhibition"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+            <button class="feature__nav feature__nav--next" type="button" aria-label="Next exhibition"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+          </>
+        )}
+      </div>
+      {slides.length > 1 && (
+        <div class="feature__dots">
+          {slides.map((slide, i) => (
+            <button class={`feature__dot ${i === 0 ? 'is-active' : ''}`} type="button" aria-label={`Show slide ${i + 1}: ${slide.title}`} aria-current={i === 0 ? 'true' : undefined}></button>
+          ))}
+        </div>
+      )}
     </section>
   ) : (
     <section class="feature">
@@ -87,12 +137,46 @@ const mapQuery = encodeURIComponent(`${settings.siteName}, ${addressLine()}`);
 </Layout>
 
 <script>
+  const AUTO_MS = 5000;
   document.querySelectorAll<HTMLElement>('.feature').forEach((root) => {
     const slides = [...root.querySelectorAll<HTMLElement>('.feature__slide')];
     if (slides.length < 2) return;
+    const dots = [...root.querySelectorAll<HTMLElement>('.feature__dot')];
     let i = 0;
-    const show = (n: number) => { slides[i].classList.remove('is-active'); i = (n + slides.length) % slides.length; slides[i].classList.add('is-active'); };
-    root.querySelectorAll('.feature__nav--prev').forEach((b) => b.addEventListener('click', () => show(i - 1)));
-    root.querySelectorAll('.feature__nav--next').forEach((b) => b.addEventListener('click', () => show(i + 1)));
+    let timer: number | undefined;
+    let paused = false;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    const show = (n: number) => {
+      slides[i].classList.remove('is-active');
+      dots[i]?.classList.remove('is-active');
+      dots[i]?.removeAttribute('aria-current');
+      i = (n + slides.length) % slides.length;
+      slides[i].classList.add('is-active');
+      dots[i]?.classList.add('is-active');
+      dots[i]?.setAttribute('aria-current', 'true');
+    };
+    const stop = () => { if (timer !== undefined) { window.clearInterval(timer); timer = undefined; } };
+    const start = () => {
+      stop();
+      if (paused || reduceMotion.matches || document.hidden) return;
+      timer = window.setInterval(() => show(i + 1), AUTO_MS);
+    };
+    const go = (n: number) => { show(n); start(); };
+
+    root.querySelector('.feature__nav--prev')?.addEventListener('click', () => go(i - 1));
+    root.querySelector('.feature__nav--next')?.addEventListener('click', () => go(i + 1));
+    dots.forEach((d, n) => d.addEventListener('click', () => go(n)));
+
+    // Pause while the pointer is over the carousel or anything inside it has keyboard focus.
+    root.addEventListener('mouseenter', () => { paused = true; stop(); });
+    root.addEventListener('mouseleave', () => { paused = false; start(); });
+    root.addEventListener('focusin', () => { paused = true; stop(); });
+    root.addEventListener('focusout', (ev) => {
+      if (!root.contains((ev as FocusEvent).relatedTarget as Node | null)) { paused = false; start(); }
+    });
+    document.addEventListener('visibilitychange', start);
+    reduceMotion.addEventListener('change', start);
+    start();
   });
 </script>
