@@ -33,7 +33,8 @@
     },
     {
       "label": "About Us",
-      "link": "/about/"
+      "link": "/about/",
+      "image": "/images/uploads/Rain_Moth_Front_Small.jpg"
     },
     {
       "label": "Contact + Visit",
