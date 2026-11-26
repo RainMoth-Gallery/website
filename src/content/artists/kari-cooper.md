@@ -4,7 +4,7 @@ medium: ink, watercolour, gouache, acrylic and oils
 town: Waikerie
 portrait: /images/uploads/Kari_Cooper.png
 order: 100
-draft: true
+draft: false
 ---
 Kari Cooper is an award winning designer, illustrator and artist based in Waikerie, in South Australia’s Riverland region.
 
@@ -17,4 +17,4 @@ Drawing on her background in graphic design and illustration, Kari combines cont
 Kari began teaching art in 2023 and began exhibiting her work in 2024.  
 She is currently the Creative Director of Art Folk Atelier, an independent creative studio and art space located within the Waikerie Collective.
 
-<p>Follow Kari on <a href="https://www.instagram.com/karicooperart" target="_blank" rel="noopener">Instagram</a> and <a href="https://www.facebook.com/KcCooper" target="_blank" rel="noopener">Facebook</a>.</p>
+Follow Kari on [Instagram](https://www.instagram.com/karicooperart) and [Facebook](https://www.facebook.com/KcCooper).
