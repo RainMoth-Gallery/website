@@ -112,11 +112,12 @@ a:hover { color: var(--red); }
 
 /* Home: feature slideshow */
 .feature { position: relative; margin-top: 24px; }
-.feature__stage { position: relative; }
-.feature__slide { display: none; flex-wrap: wrap; min-height: 500px; }
-.feature__slide.is-active { display: flex; animation: feature-fade 0.5s ease; }
-@keyframes feature-fade { from { opacity: 0; } to { opacity: 1; } }
-@media (prefers-reduced-motion: reduce) { .feature__slide.is-active { animation: none; } }
+/* Slides are stacked in one grid cell and crossfade. The outgoing slide stays fully opaque underneath
+   until the incoming one has finished fading in, so the page background never shows through mid-fade. */
+.feature__stage { position: relative; display: grid; }
+.feature__slide { grid-area: 1 / 1; display: flex; flex-wrap: wrap; min-height: 500px; opacity: 0; visibility: hidden; z-index: 0; transition: opacity 0s linear 0.9s, visibility 0s linear 0.9s; }
+.feature__slide.is-active { opacity: 1; visibility: visible; z-index: 1; transition: opacity 0.9s ease; }
+@media (prefers-reduced-motion: reduce) { .feature__slide, .feature__slide.is-active { transition: none; } }
 .feature__media { flex: 999 1 560px; min-width: 0; min-height: 340px; position: relative; }
 .feature__media .photo { position: absolute; inset: 0; }
 /* Extra right padding keeps the text clear of the next arrow, which sits on the panel's right edge. */
@@ -140,7 +141,10 @@ a:hover { color: var(--red); }
 /* When the panel wraps under the image, centre the arrows on the image and use even padding. */
 @media (max-width: 1050px) {
   .feature__nav { top: 170px; }
-  .feature__panel { padding: 40px 36px; }
+  /* Fixed-height image on top; the text panel takes up any extra height from a taller slide. */
+  .feature__slide { flex-direction: column; flex-wrap: nowrap; }
+  .feature__media { flex: 0 0 340px; }
+  .feature__panel { flex: 1 1 auto; padding: 40px 36px; }
 }
 
 /* Tile grid */
