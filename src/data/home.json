@@ -39,7 +39,8 @@
     },
     {
       "label": "Contact + Visit",
-      "link": "/contact-visit/"
+      "link": "/contact-visit/",
+      "image": "/images/uploads/Contact_&_Visit.jpg"
     }
   ]
 }
