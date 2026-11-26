@@ -3,7 +3,7 @@ name: Kari Cooper
 medium: ink, watercolour, gouache, acrylic and oils
 town: Waikerie
 order: 100
-draft: false
+draft: true
 ---
 Kari Cooper is an award winning designer,
 
