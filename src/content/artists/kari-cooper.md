@@ -2,6 +2,7 @@
 name: Kari Cooper
 medium: ink, watercolour, gouache, acrylic and oils
 town: Waikerie
+portrait: /images/uploads/Kari_Cooper.png
 order: 100
 draft: true
 ---
