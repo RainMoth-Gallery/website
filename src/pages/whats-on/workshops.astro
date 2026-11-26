@@ -1,10 +1,26 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import Photo from '../../components/Photo.astro';
-import { datedByStatus, longDate, timeRange, tone } from '../../lib/site';
+import { datedByStatus, longDate, timeRange, tone, iso, schemaDateTime, galleryPlace, organiser } from '../../lib/site';
 const { upcoming } = await datedByStatus('workshops');
+const schema = upcoming.map((w) => {
+  const day = iso(w.data.date);
+  return {
+    '@type': 'Event',
+    name: w.data.title,
+    ...(w.data.summary && { description: w.data.summary }),
+    startDate: schemaDateTime(day, w.data.startTime),
+    ...(w.data.endTime && { endDate: schemaDateTime(day, w.data.endTime) }),
+    eventStatus: 'https://schema.org/EventScheduled',
+    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+    location: galleryPlace(),
+    organizer: organiser(),
+    ...(w.data.tutor && { performer: { '@type': 'Person', name: w.data.tutor } }),
+    ...(w.data.image && { image: [new URL(w.data.image, Astro.site).href] }),
+  };
+});
 ---
-<Layout title="Workshops" description="Art workshops and demonstrations for adults and children at Rain Moth Gallery, Waikerie.">
+<Layout title="Workshops" description="Art workshops and demonstrations for adults and children at Rain Moth Gallery, Waikerie." schema={schema}>
   <section class="page-intro">
     <p class="eyebrow">What's On</p>
     <h1>Workshops</h1>
