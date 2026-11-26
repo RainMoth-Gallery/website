@@ -1,10 +1,26 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import SocialIcons from '../../components/SocialIcons.astro';
-import { datedByStatus, dayNum, monthShort, longDate, timeRange, tone } from '../../lib/site';
+import { datedByStatus, dayNum, monthShort, longDate, timeRange, tone, iso, schemaDateTime, galleryPlace, organiser } from '../../lib/site';
 const { upcoming, past } = await datedByStatus('events');
+const schema = upcoming.map((e) => {
+  const day = iso(e.data.date);
+  return {
+    '@type': 'Event',
+    name: e.data.title,
+    ...(e.data.summary && { description: e.data.summary }),
+    startDate: schemaDateTime(day, e.data.startTime),
+    ...(e.data.endTime && { endDate: schemaDateTime(day, e.data.endTime) }),
+    eventStatus: 'https://schema.org/EventScheduled',
+    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+    location: galleryPlace(),
+    organizer: organiser(),
+    ...(e.data.bookingLink?.startsWith('http') && { url: e.data.bookingLink }),
+    ...(e.data.image && { image: [new URL(e.data.image, Astro.site).href] }),
+  };
+});
 ---
-<Layout title="Events" description="Exhibition openings, artist talks and special events at Rain Moth Gallery, Waikerie.">
+<Layout title="Events" description="Exhibition openings, artist talks and special events at Rain Moth Gallery, Waikerie." schema={schema}>
   <section class="page-intro">
     <p class="eyebrow">What's On</p>
     <h1>Events</h1>

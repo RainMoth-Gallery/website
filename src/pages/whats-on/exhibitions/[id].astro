@@ -2,7 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import Layout from '../../../layouts/Layout.astro';
 import Photo from '../../../components/Photo.astro';
-import { visible, dateRange, iso, todayISO } from '../../../lib/site';
+import { visible, dateRange, iso, todayISO, galleryPlace, organiser, settings } from '../../../lib/site';
 
 export async function getStaticPaths() {
   const all = (await getCollection('exhibitions')).filter(visible);
@@ -12,9 +12,25 @@ const { entry } = Astro.props;
 const { Content } = await render(entry);
 const d = entry.data;
 const today = todayISO();
+const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
+const imageUrl = d.image ? new URL(d.image, Astro.site).href : undefined;
+const schema = {
+  '@type': 'ExhibitionEvent',
+  name: d.title,
+  description: d.summary || `${d.title} at ${settings.siteName}, ${dateRange(d.start, d.end)}.`,
+  startDate: iso(d.start),
+  endDate: iso(d.end),
+  eventStatus: 'https://schema.org/EventScheduled',
+  eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+  isAccessibleForFree: true,
+  url: pageUrl,
+  location: galleryPlace(),
+  organizer: organiser(),
+  ...(imageUrl && { image: [imageUrl] }),
+};
 const status = iso(d.end) < today ? 'Past exhibition' : iso(d.start) > today ? 'Coming soon' : 'Now showing';
 ---
-<Layout title={d.title} description={d.summary || `${d.title} at Rain Moth Gallery, ${dateRange(d.start, d.end)}.`} image={d.image || undefined}>
+<Layout title={d.title} description={d.summary || `${d.title} at Rain Moth Gallery, ${dateRange(d.start, d.end)}.`} image={d.image || undefined} schema={schema}>
   <p style="padding-top: 16px"><a class="muted" href="/whats-on/exhibitions/" style="text-decoration:none">← All exhibitions</a></p>
   <section class="section">
     <div class="exhibit">

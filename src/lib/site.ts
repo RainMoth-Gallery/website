@@ -73,6 +73,38 @@ export function activeClosures() {
   );
 }
 
+/** JSON for a <script type="application/ld+json"> tag. Escapes "<" so content can never close the tag early. */
+export const ldJson = (data: unknown) => JSON.stringify(data).replace(/</g, '\\u003c');
+
+/** The gallery as a schema.org Place, used as the location of every event. */
+export function galleryPlace() {
+  const a = settings.address;
+  return {
+    '@type': 'Place',
+    name: settings.siteName,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: a.street,
+      addressLocality: a.town,
+      addressRegion: a.state,
+      postalCode: a.postcode,
+      addressCountry: 'AU',
+    },
+  };
+}
+
+export const organiser = () => ({ '@type': 'Organization', name: settings.organisation || settings.siteName });
+
+/** Date (and optional 24-hour time) for structured data. With a time it carries Adelaide's UTC offset, e.g. 2026-12-05T11:00:00+10:30. */
+export function schemaDateTime(day: string, time?: string): string {
+  const m = time && /^(\d{1,2})[:.](\d{2})$/.exec(time.trim());
+  if (!m) return day;
+  const hhmm = `${m[1].padStart(2, '0')}:${m[2]}`;
+  const parts = new Intl.DateTimeFormat('en-AU', { timeZone: TZ, timeZoneName: 'longOffset' }).formatToParts(new Date(`${day}T${hhmm}:00Z`));
+  const off = parts.find((p) => p.type === 'timeZoneName')?.value.replace('GMT', '') || '+09:30';
+  return `${day}T${hhmm}:00${off}`;
+}
+
 export function addressLine(): string {
   const a = settings.address;
   return [a.street, a.town, `${a.state} ${a.postcode}`.trim()].filter(Boolean).join(', ');
