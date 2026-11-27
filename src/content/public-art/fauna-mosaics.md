@@ -2,6 +2,7 @@
 title: Fauna mosaics
 artist: Waikerie Primary School students (teacher Bronwyn Burford)
 location: Rain Moth Gallery
+image: /images/uploads/Public-Art-Rainmoth_fauna-mosaics_WEB.jpg
 order: 6
 draft: false
 ---
